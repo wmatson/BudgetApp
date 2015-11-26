@@ -4,7 +4,11 @@ import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.servlet.GuiceServletContextListener;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.guice.JerseyServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
@@ -31,9 +35,20 @@ public class AppConfig extends GuiceServletContextListener {
     }
 
     public static class GuiceConfig implements Module {
-
         @Override
         public void configure(Binder binder) {
+        }
+        
+        @Singleton
+        @Provides
+        public MongoClient getMongoClient() {
+            return new MongoClient(System.getProperty("MONGO_HOST", "localhost"));
+        }
+        
+        @Singleton
+        @Provides
+        public MongoDatabase getBudgetDatabase(MongoClient client) {
+            return client.getDatabase(System.getProperty("MONGO_DATABASE", "BudgetAppDev"));
         }
     }
 
