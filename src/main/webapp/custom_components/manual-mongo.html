@@ -1,0 +1,69 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<dom-module id="manual-mongo">
+  <template>
+      <style>
+          paper-textarea {
+              --paper-input-container-input: {
+                  font-family: monospace;
+              };
+          }
+      </style>
+      <iron-ajax id="getAjax" url="/BudgetApp/data" params="{{_generateGetParams(collectionName)}}" auto last-response="{{collectionResponse}}"></iron-ajax>
+      <iron-ajax id="postAjax" method="post" url="/BudgetApp/data" on-response="_fireGetAjax"></iron-ajax>
+      <div class="selectionDiv">
+          <paper-input label="collection" value="{{collectionName}}"></paper-input>
+          <paper-input label="index" type="number" value="{{collectionIndex}}"></paper-input>
+          <div>Items in Collection: <span>{{collectionResponse.length}}</span></div>
+      </div>
+      <paper-textarea value="{{collectionJson}}"></paper-textarea>
+      <paper-button on-tap="save">Save</paper-button>
+  </template>
+
+  <script>
+    Polymer({
+      is: "manual-mongo",
+      properties: {
+          collectionName: {
+              type: String,
+              value: 'budgets',
+              notify: true
+          },
+          collectionIndex: {
+              type: Number,
+              value: 0,
+              notify: true
+          },
+          collectionResponse: {
+              type: Array,
+              notify: true
+          },
+          collectionJson: {
+              type: String,
+              value: 'budgets',
+              notify: true
+          }
+         
+      },
+      observers: ['updateCollectionJson(collectionResponse, collectionIndex)'],
+      _generateGetParams: function(collectionName) {
+          return {collection: collectionName};
+      },
+      _fireGetAjax: function() {
+          this.$.getAjax.generateRequest();
+      },
+      updateCollectionJson: function(collectionResponse, collectionIndex) {
+          this.set('collectionJson', JSON.stringify(collectionResponse[collectionIndex], undefined, 2));
+      },
+      save: function() {
+          this.$.postAjax.body = 'collection='+encodeURIComponent(this.collectionName)+'&toAdd='+encodeURIComponent(this.collectionJson);
+          this.$.postAjax.generateRequest();
+      }
+    });
+  </script>
+
+</dom-module>

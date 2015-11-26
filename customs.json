@@ -2,8 +2,12 @@
     "elements": {
         "template": {},
         "iron-a11y-keys": {},
+        "paper-button": {},
         "main-page": {},
-        "dom-module": {}
+        "dom-module": {},
+        "paper-textarea": {},
+        "paper-input": {},
+        "iron-ajax": {}
     },
     "attributes": {}
 }
