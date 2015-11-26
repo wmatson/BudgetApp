@@ -8,6 +8,7 @@
 <link rel="import" href="bills-page.html">
 <link rel="import" href="loan-payments-page.html">
 <link rel="import" href="income-page.html">
+<link rel="import" href="manual-mongo.html">
 
 <dom-module id="main-page">
 
@@ -29,14 +30,15 @@
           <paper-tab>Bills</paper-tab>
           <paper-tab>Loans</paper-tab>
           <paper-tab>Income</paper-tab>
+          <paper-tab>Manual Data</paper-tab>
       </paper-tabs>
       <iron-pages selected="{{selectedPage}}">
           <progress-page></progress-page>
-          <expenses-page expenses="{{_getExpenses(budget.transactions)}}">
-          </expenses-page>
+          <expenses-page></expenses-page>
           <bills-page></bills-page>
           <loan-payments-page></loan-payments-page>
-          <income-page income="{{_getIncome(budget.transactions)}}"></income-page>
+          <income-page></income-page>
+          <manual-mongo></manual-mongo>
       </iron-pages>
   </template>
 
@@ -44,65 +46,8 @@
     Polymer({
       is: "main-page",
       properties: {
-        selectedPage: {
-            type: Number,
-            value: 1
-        },
-        budget : {
-            type : Object, 
-            value : {  
-              "_id":{  
-                 "$oid":"56564721f7d828187870f411"
-              },
-              "categories":[  
-                 "Wes Blow $",
-                 "Armalene Blow $",
-                 "Groceries",
-                 "Fun"
-              ],
-              "transactions":[  
-                 {  
-                    "source":"AMEX",
-                    "description":"King Putt",
-                    "amount":-10.5,
-                    "category":"Fun"
-                 },
-                 {  
-                    "source":"AMEX",
-                    "description":"Zeppole's",
-                    "amount":-13.2,
-                    "category":"Wes Blow $"
-                 },
-                 {  
-                    "source":"Banner",
-                    "description":"Laundry",
-                    "amount":-50.0,
-                    "category":"Groceries"
-                 },
-                 {  
-                    "source":"IBM",
-                    "description":"Armalene's Paycheck",
-                    "amount":5000.00
-                 }
-              ]
-           }
-        },
-      },
-      
-    _getExpenses : function(transactions) {
-        var expenses = transactions.filter(function(transaction) {
-            return transaction.amount < 0;
-        });
-        return expenses;
-    },
-      
-    _getIncome : function(transactions) {
-        var income = transactions.filter(function(transaction) {
-            return transaction.amount > 0;
-        });
-        console.log(income);
-        return income;
-    },
+          value: String
+      }
     });
   </script>
 

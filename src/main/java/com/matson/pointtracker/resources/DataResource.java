@@ -15,17 +15,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.bson.BsonObjectId;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
 @Path("/data")
-public class OtherResource {
+public class DataResource {
     
     private final MongoDatabase db;
 
     @Inject
-    public OtherResource(MongoDatabase database) {
+    public DataResource(MongoDatabase database) {
         this.db = database;
     }
     
@@ -41,7 +40,9 @@ public class OtherResource {
     public Response upsertDoc(@FormParam("collection") String collection, @FormParam("toAdd") String json)
     {
         Document toAdd = Document.parse(json);
-        UpdateResult result = db.getCollection(collection).replaceOne(new BasicDBObject("_id", toAdd.get("_id")), toAdd, new UpdateOptions().upsert(true));
+        if(!toAdd.containsKey("name"))
+            return Response.status(Response.Status.BAD_REQUEST).entity("object must have a name").build();
+        UpdateResult result = db.getCollection(collection).replaceOne(new BasicDBObject("name", toAdd.get("name")), toAdd, new UpdateOptions().upsert(true));
         Document response = new Document();
         response.append("_id", result.getUpsertedId());
         return Response.ok(response.toJson()).build();
