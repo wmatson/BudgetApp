@@ -2,6 +2,7 @@
     "elements": {
         "template": {},
         "iron-a11y-keys": {},
+        "main-page": {},
         "dom-module": {}
     },
     "attributes": {}

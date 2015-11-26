@@ -1,9 +1,14 @@
 package com.matson.pointtracker.resources;
 
 import com.google.inject.Inject;
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 @Path("")
@@ -14,8 +19,8 @@ public class RootResource {
     }
 
     @GET
-    public Response getIndex() {
-        return Response.ok("Hello World!").build();
+    public void getIndex(@Context HttpServletRequest request, @Context HttpServletResponse response) throws ServletException, IOException {
+        request.getRequestDispatcher("index.html").forward(request, response);
     }
 
     @GET
