@@ -5,14 +5,37 @@
 <dom-module id="income-page">
 
   <template>
-      <div>income PAGE</div>
+      <style>
+          :host {
+              @apply(--layout-flex);
+              @apply(--layout-vertical);
+          }
+          
+          .item {
+              padding: 10px;
+              border-bottom: 1px solid black;
+          }
+      </style>
+      <iron-list items="[[income]]">
+          <template>
+              <div class="item">
+                  <div>Description: <span>[[item.description]]</span></div>
+                  <div>Category: <span>[[item.category]]</span></div>
+                  <div> Amount: <span>[[_formatDollarAmount(item.amount)]]</span></div>
+              </div>
+          </template>
+      </iron-list>
   </template>
 
   <script>
     Polymer({
       is: "income-page",
-      properties: {
-          value: String
+       properties: {
+          income: Array
+      },
+      
+      _formatDollarAmount : function(amount) {
+          return "$" + (amount);
       }
     });
   </script>

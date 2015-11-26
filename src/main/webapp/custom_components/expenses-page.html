@@ -1,18 +1,40 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
 
 <dom-module id="expenses-page">
 
   <template>
-      <div>EXPENSES PAGE</div>
+      <style>
+          :host {
+              @apply(--layout-flex);
+              @apply(--layout-vertical);
+          }
+          
+          .item {
+              padding: 10px;
+              border-bottom: 1px solid black;
+          }
+      </style>
+      <iron-list items="[[expenses]]">
+          <template>
+              <div class="item">
+                  <div>Description: <span>[[item.description]]</span></div>
+                  <div> Amount: <span>[[_formatDollarAmount(item.amount)]]</span></div>
+              </div>
+          </template>
+      </iron-list>
   </template>
 
   <script>
     Polymer({
       is: "expenses-page",
       properties: {
-          value: String
+          expenses: Array
+      },
+      
+      _formatDollarAmount : function(negativeAmount) {
+          return "$" + (-negativeAmount);
       }
     });
   </script>
