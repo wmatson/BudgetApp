@@ -5,14 +5,15 @@
 <dom-module id="progress-page">
 
   <template>
-      <div>progress PAGE</div>
+      <div>Budget Name: <span>{{name}}</span></div>
   </template>
 
   <script>
     Polymer({
       is: "progress-page",
       properties: {
-          value: String
+          name: String,
+          categories: Array
       }
     });
   </script>

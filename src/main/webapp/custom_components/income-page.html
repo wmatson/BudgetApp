@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
 
 <dom-module id="income-page">
 
@@ -20,7 +21,6 @@
           <template>
               <div class="item">
                   <div>Description: <span>[[item.description]]</span></div>
-                  <div>Category: <span>[[item.category]]</span></div>
                   <div> Amount: <span>[[_formatDollarAmount(item.amount)]]</span></div>
               </div>
           </template>

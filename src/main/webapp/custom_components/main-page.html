@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 
 <link rel="import" href="progress-page.html">
 <link rel="import" href="expenses-page.html">
@@ -11,44 +12,93 @@
 <link rel="import" href="manual-mongo.html">
 
 <dom-module id="main-page">
+    <template>
+        <style>
+            :host {
+                @apply(--layout-fit);
+                @apply(--layout-vertical);
+            }
 
-  <template>
-      <style>
-          :host {
-              @apply(--layout-fit);
-              @apply(--layout-vertical);
-          }
-          
-          iron-pages {
-              @apply(--layout-flex);
-              padding: 20px;
-          }
-      </style>
-      <paper-tabs selected="{{selectedPage}}">
-          <paper-tab>Progress</paper-tab>
-          <paper-tab>Expenses</paper-tab>
-          <paper-tab>Bills</paper-tab>
-          <paper-tab>Loans</paper-tab>
-          <paper-tab>Income</paper-tab>
-          <paper-tab>Manual Data</paper-tab>
-      </paper-tabs>
-      <iron-pages selected="{{selectedPage}}">
-          <progress-page></progress-page>
-          <expenses-page></expenses-page>
-          <bills-page></bills-page>
-          <loan-payments-page></loan-payments-page>
-          <income-page></income-page>
-          <manual-mongo></manual-mongo>
-      </iron-pages>
-  </template>
-
-  <script>
-    Polymer({
-      is: "main-page",
-      properties: {
-          value: String
-      }
-    });
-  </script>
+            iron-pages {
+                @apply(--layout-flex);
+                padding: 20px;
+            }
+        </style>
+        
+        <iron-ajax id="getAjax" url="/BudgetApp/data" params="{{_getBudgets(collectionName)}}" auto last-response="{{budgets}}"></iron-ajax>
+        <iron-ajax id="postAjax" method="post" url="/BudgetApp/data" on-response="_fireGetAjax"></iron-ajax>
+        
+        <paper-tabs selected="{{selectedPage}}">
+            <paper-tab>Progress</paper-tab>
+            <paper-tab>Expenses</paper-tab>
+            <paper-tab>Bills</paper-tab>
+            <paper-tab>Loans</paper-tab>
+            <paper-tab>Income</paper-tab>
+            <paper-tab>Manual Data</paper-tab>
+        </paper-tabs>
+        <iron-pages selected="{{selectedPage}}">
+            <progress-page
+                name="{{budget.name}}"
+                categories="{{budget.categories}}">
+            </progress-page>
+            <expenses-page expenses="{{_getExpenses(budget.transactions)}}" on-create-expense="_createTransaction"></expenses-page>
+            <bills-page></bills-page>
+            <loan-payments-page></loan-payments-page>
+            <income-page income="{{_getIncome(budget.transactions)}}"></income-page>
+            <manual-mongo></manual-mongo>
+        </iron-pages>
+    </template>
+    <script>
+        Polymer({
+            is: "main-page",
+            properties: {
+                collectionName: {
+                    type: String,
+                    value: "budgets"
+                },
+                selectedPage: {
+                    type: Number,
+                    value: 1
+                },
+                budget : Object,
+                budgets : Array
+            },
+            observers : [
+                '_handleBudgetsChanged(budgets)',
+//                'updateCollectionJson(budgets)'
+            ],
+            
+            _handleBudgetsChanged : function(budgets) {
+               this.set('budget', budgets[0]);
+            },
+            _getExpenses: function (transactions) {
+                var expenses = transactions.filter(function (transaction) {
+                    return transaction.amount < 0;
+                });
+                return expenses;
+            },
+            _getIncome: function (transactions) {
+                var income = transactions.filter(function (transaction) {
+                    return transaction.amount > 0;
+                });
+                console.log(income);
+                return income;
+            },
+            _getBudgets : function(collectionName) {
+                return { "collection" : collectionName };
+            },
+            
+            _fireGetAjax: function() {
+                this.$.getAjax.generateRequest();
+            },
+            
+            _createTransaction : function(e) {
+                var newTransaction = e.detail;
+                this.budget.transactions.push(newTransaction);
+                this.$.postAjax.body = 'collection='+encodeURIComponent(this.collectionName)+'&toAdd='+encodeURIComponent(JSON.stringify(this.budget));
+                this.$.postAjax.generateRequest();
+            }
+        });
+    </script>
 
 </dom-module>

@@ -1,20 +1,95 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
 
 <dom-module id="expenses-page">
 
-  <template>
-      <div>EXPENSES PAGE</div>
-  </template>
+    <template>
+        <style>
+            :host {
+                @apply(--layout-flex);
+                @apply(--layout-vertical);
+            }
 
-  <script>
-    Polymer({
-      is: "expenses-page",
-      properties: {
-          value: String
-      }
-    });
-  </script>
+            .item {
+                padding: 10px;
+                border-bottom: 1px solid black;
+            }
+        </style>
+        <paper-icon-button icon="icons:add" on-tap="_openExpensesDialog"></paper-icon-button>
+        
+        <paper-dialog id="expenseDialog">
+            <h2>New Expense</h2>
+            <div>
+                <paper-input label="Date" value="{{date}}"></paper-input>
+                <paper-input label="Description" value="{{description}}"></paper-input>
+                <paper-input label="Amount" type="number" value="{{amount}}"></paper-input>
+                <paper-input label="Category" value="{{category}}"></paper-input>
+                <paper-textarea label="Notes" rows="2" value="{{notes}}"></paper-textarea>
+            </div>
+            <div>
+                <paper-button on-tap="_createExpense">Create</paper-button>
+            </div>
+        </paper-dialog>
+        
+        <iron-list items="[[expenses]]">
+            <template>
+                <div class="item">
+                    <div>Description: <span>[[item.description]]</span></div>
+                    <div>Category: <span>[[item.category]]</span></div>
+                    <div>Amount: <span>[[_formatDollarAmount(item.amount)]]</span></div>
+                </div>
+            </template>
+        </iron-list>
+    </template>
+
+    <script>
+        Polymer({
+            is: "expenses-page",
+            properties: {
+                expenses: Array
+            },
+            _formatDollarAmount: function (negativeAmount) {
+                return "$" + (-negativeAmount);
+            },
+            _openExpensesDialog : function() {
+                this.$.expenseDialog.open();
+            },
+            _closeExpensesDialog : function() {
+                this.$.expenseDialog.close();
+            },
+            
+            _generateNewExpenseJSON : function() {
+                var negativeAmount = -(parseInt(this.amount));
+                var newExpense = {
+                    date: this.date,
+                    description: this.description,
+                    amount: negativeAmount,
+                    category: this.category,
+                    notes: this.notes
+                };
+                return newExpense;
+            },
+            
+            _resetNewExpenseDialog : function() {
+                this.set('date', "");
+                this.set('description', "");
+                this.set('amount', "");
+                this.set('category', "");
+                this.set('notes', "");
+            },
+            _createExpense : function() {
+                var newExpenseJSON = this._generateNewExpenseJSON();
+                this.fire('create-expense', newExpenseJSON);
+                this._resetNewExpenseDialog();
+                this._closeExpensesDialog();
+            },
+        });
+    </script>
 
 </dom-module>
