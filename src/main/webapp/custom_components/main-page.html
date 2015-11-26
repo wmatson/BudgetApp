@@ -1,9 +1,42 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+
+<link rel="import" href="progress-page.html">
+<link rel="import" href="expenses-page.html">
+<link rel="import" href="bills-page.html">
+<link rel="import" href="loan-payments-page.html">
+<link rel="import" href="income-page.html">
 
 <dom-module id="main-page">
 
   <template>
-      <div>Main Page Test: <span>{{value}}</span></div>
+      <style>
+          :host {
+              @apply(--layout-fit);
+              @apply(--layout-vertical);
+          }
+          
+          iron-pages {
+              @apply(--layout-flex);
+              padding: 20px;
+          }
+      </style>
+      <paper-tabs selected="{{selectedPage}}">
+          <paper-tab>Progress</paper-tab>
+          <paper-tab>Expenses</paper-tab>
+          <paper-tab>Bills</paper-tab>
+          <paper-tab>Loans</paper-tab>
+          <paper-tab>Income</paper-tab>
+      </paper-tabs>
+      <iron-pages selected="{{selectedPage}}">
+          <progress-page></progress-page>
+          <expenses-page></expenses-page>
+          <bills-page></bills-page>
+          <loan-payments-page></loan-payments-page>
+          <income-page></income-page>
+      </iron-pages>
   </template>
 
   <script>
