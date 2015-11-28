@@ -1,0 +1,67 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<dom-module id="new-transaction">
+
+    <template>
+        <style>
+            :host {
+                //
+            }
+        </style>
+        
+        <h2>New {{type}}</h2>
+        <div>
+            <paper-input label="Date" type="date" value="{{date}} always-float-label"></paper-input>
+            <paper-input label="Category" value="{{category}}" always-float-label></paper-input>
+            <paper-input label="Description" value="{{description}}" always-float-label></paper-input>
+            <paper-input label="Amount" type="number" value="{{amount}}" always-float-label></paper-input>
+            <paper-textarea label="Notes" rows="2" value="{{notes}}" always-float-label></paper-textarea>
+        </div>
+        <div>
+            <paper-button on-tap="_createTransaction">Create</paper-button>
+        </div>
+        
+    </template>
+
+    <script>
+        Polymer({
+            is: "new-transaction",
+            properties: {
+                type: String
+            },
+            
+            _createTransaction : function() {
+                var newTransaction = this._generateNewTransactionObject();
+                this.fire('create-transaction', newTransaction);
+                this._resetNewExpenseDialog();
+            },
+            
+            _generateNewTransactionObject : function() {
+                var transactionAmount = this.amount;
+                if (this.type == "Expense") {
+                    transactionAmount = -transactionAmount;
+                }
+                var newExpense = {
+                    date: this.date,
+                    description: this.description,
+                    amount: transactionAmount,
+                    category: this.category,
+                    notes: this.notes
+                };
+                return newExpense;
+            },
+            
+            _resetNewExpenseDialog : function() {
+                this.set('date', "");
+                this.set('description', "");
+                this.set('amount', "");
+                this.set('category', "");
+                this.set('notes', "");
+            },
+        });
+    </script>
+
+</dom-module>

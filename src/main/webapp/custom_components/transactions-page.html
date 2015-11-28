@@ -1,0 +1,82 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="new-transaction.html">
+
+<dom-module id="transactions-page">
+
+    <template>
+        <style>
+            :host {
+                @apply(--layout-flex);
+                @apply(--layout-vertical);
+            }
+            
+            paper-dialog {
+                padding: 10px;
+            }
+
+            .item {
+                padding: 10px;
+                border-bottom: 1px solid black;
+            }
+        </style>
+        <paper-icon-button icon="icons:add" on-tap="_openTransactionDialog"></paper-icon-button>
+        
+        <paper-dialog id="transactionDialog">
+            <new-transaction type="{{type}}" on-create-transaction="_createTransaction"></new-transaction>
+        </paper-dialog>
+        
+        <iron-list id="expensesList" items="[[transactions]]">
+            <template>
+                <div class="item">
+                    <div>Date: <span>[[item.description]]</span></div>
+                    <div>Category: <span>[[item.category]]</span></div>
+                    <div>Description: <span>[[item.description]]</span></div>
+                    <div>Amount: <span>[[_formatDollarAmount(item.amount)]]</span></div>
+                    <div>Notes: <span>[[item.notes]]</span></div>
+                    <paper-icon-button icon="icons:delete" on-tap="_deleteTransaction"></paper-icon-button>
+                </div>
+            </template>
+        </iron-list>
+    </template>
+
+    <script>
+        Polymer({
+            is: "transactions-page",
+            properties: {
+                transactions: Array,
+                type: String
+            },
+            
+            _formatDollarAmount: function (amount) {
+                return amount < 0 ? accounting.formatMoney(-amount) : accounting.formatMoney(amount);
+            },
+            
+            _openTransactionDialog : function() {
+                this.$.transactionDialog.open();
+            },
+            
+            _closeTransactionDialog : function() {
+                this.$.transactionDialog.close();
+            },
+            
+            _createTransaction : function() {
+                // create-transaction event bubbles up to main-page
+                this._closeTransactionDialog();
+            },
+            
+            _deleteTransaction : function(e) {
+                var expenseToDelete = e.model.get('item');
+                this.fire('delete-transaction', expenseToDelete);
+            }
+        });
+    </script>
+
+</dom-module>

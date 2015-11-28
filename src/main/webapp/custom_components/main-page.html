@@ -5,10 +5,9 @@
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 
 <link rel="import" href="progress-page.html">
-<link rel="import" href="expenses-page.html">
+<link rel="import" href="transactions-page.html">
 <link rel="import" href="bills-page.html">
 <link rel="import" href="loan-payments-page.html">
-<link rel="import" href="income-page.html">
 <link rel="import" href="manual-mongo.html">
 
 <dom-module id="main-page">
@@ -41,10 +40,20 @@
                 name="{{budget.name}}"
                 categories="{{budget.categories}}">
             </progress-page>
-            <expenses-page expenses="{{_getExpenses(budget.transactions)}}" on-create-expense="_createTransaction"></expenses-page>
+            <transactions-page 
+                transactions="{{_getExpenses(budget.transactions)}}" 
+                type="Expense"
+                on-create-transaction="_createTransaction"
+                on-delete-transaction="_deleteTransaction">
+            </transactions-page>
             <bills-page></bills-page>
             <loan-payments-page></loan-payments-page>
-            <income-page income="{{_getIncome(budget.transactions)}}"></income-page>
+            <transactions-page 
+                transactions="{{_getIncome(budget.transactions)}}"
+                type="Income"
+                on-create-transaction="_createTransaction"
+                on-delete-transaction="_deleteTransaction">
+            </transactions-page>
             <manual-mongo></manual-mongo>
         </iron-pages>
     </template>
@@ -97,6 +106,18 @@
                 this.budget.transactions.push(newTransaction);
                 this.$.postAjax.body = 'collection='+encodeURIComponent(this.collectionName)+'&toAdd='+encodeURIComponent(JSON.stringify(this.budget));
                 this.$.postAjax.generateRequest();
+            },
+            
+            _deleteTransaction : function(e) {
+                var transactionToDelete = e.detail;
+                var indexOfTransactionToDelete = this.budget.transactions.indexOf(transactionToDelete);
+                if (indexOfTransactionToDelete >= 0) {
+                    this.budget.transactions.splice(indexOfTransactionToDelete, 1);
+                    this.$.postAjax.body = 'collection='+encodeURIComponent(this.collectionName)+'&toAdd='+encodeURIComponent(JSON.stringify(this.budget));
+                    this.$.postAjax.generateRequest();
+                } else {
+                    console.error("couldn't delete because there was no index!")
+                }
             }
         });
     </script>
