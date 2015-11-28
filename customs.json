@@ -2,12 +2,30 @@
     "elements": {
         "template": {},
         "iron-a11y-keys": {},
-        "paper-button": {},
+        "paper-icon-button": {
+            "attributes": {
+                "icon": {}
+            }
+        },
+        "progress-page": {},
         "main-page": {},
-        "dom-module": {},
+        "paper-tab": {},
+        "transactions-page": {},
+        "loan-payments-page": {},
+        "bills-page": {},
         "paper-textarea": {},
+        "iron-ajax": {},
+        "paper-dialog": {},
+        "paper-button": {},
+        "iron-pages": {},
+        "dom-module": {},
+        "new-transaction": {},
         "paper-input": {},
-        "iron-ajax": {}
+        "manual-mongo": {},
+        "paper-tabs": {}
     },
-    "attributes": {}
+    "attributes": {
+        "on-tap": {},
+        "id": {}
+    }
 }
