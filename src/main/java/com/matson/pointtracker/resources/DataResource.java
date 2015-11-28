@@ -10,6 +10,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -36,15 +37,21 @@ public class DataResource {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Response upsertDoc(@FormParam("collection") String collection, @FormParam("toAdd") String json) {
+    public Response insertDoc(@FormParam("collection") String collection, @FormParam("toAdd") String json) {
         Document toAdd = Document.parse(json);
-        if (!toAdd.containsKey("name")) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("object must have a name").build();
+        db.getCollection(collection).insertOne(toAdd);
+        return Response.ok(toAdd.toJson()).build();
+    }
+    
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateDoc(@FormParam("collection") String collection, @FormParam("toUpdate") String json) {
+        Document toUpdate = Document.parse(json);
+        if (!toUpdate.containsKey("_id")) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("object must have _id").build();
         }
-        UpdateResult result = db.getCollection(collection).replaceOne(fieldSearch("name", toAdd.get("name")), toAdd, new UpdateOptions().upsert(true));
-        Document response = new Document();
-        response.append("_id", result.getUpsertedId());
-        return Response.ok(response.toJson()).build();
+        db.getCollection(collection).replaceOne(fieldSearch("_id", toUpdate.get("_id")), toUpdate);
+        return Response.ok(toUpdate.toJson()).build();
     }
 
     @POST
@@ -59,8 +66,8 @@ public class DataResource {
     @POST
     @Path("remove")
     public Response removeItem(@FormParam("collection") String collection, @FormParam("oid") String oid, @FormParam("field") String field, @FormParam("item") String itemJson) {
-        BasicDBObject pushUpdate = new BasicDBObject("$pull", new BasicDBObject(field, JSON.parse(itemJson)));
-        db.getCollection(collection).findOneAndUpdate(fieldSearch("_id", new ObjectId(oid)), pushUpdate);
+        BasicDBObject pullUpdate = new BasicDBObject("$pull", new BasicDBObject(field, JSON.parse(itemJson)));
+        db.getCollection(collection).findOneAndUpdate(fieldSearch("_id", new ObjectId(oid)), pullUpdate);
         return Response.ok().build();
     }
 
