@@ -1,0 +1,38 @@
+<script>
+    DataHandlerBehavior = {
+        
+        properties : {
+            path : "/BudgetApp/data",
+        },
+        
+//        _fireGet function() {
+//            this.$.getAjax.generateRequest();
+//        },
+        
+        _create : function(collectionName, newCollectionItem) {
+            this._upsert(collectionName, newCollectionItem);
+        },
+        
+        _update : function(collectionName, updatedCollectionItem) {
+            this._upsert(collectionName, updatedCollectionItem);
+        },
+        
+        _delete : function(collectionName, collectionItemToDeleteId) {
+            this.$.deleteAjax.body = 'collection='+encodeURIComponent(collectionName)+'&oid'+encodeURIComponent(collectionItemToDeleteId);
+            this.$.deleteAjax.generateRequest();
+        },
+
+        _upsert : function(collectionName, collectionItem) {
+            this.$.postAjax.body = 'collection='+encodeURIComponent(collectionName)+'&toAdd='+encodeURIComponent(newCollectionItem);
+            this.$.postAjax.generateRequest();
+        },
+        
+//        _push : function(collection, itemIndex, )
+//        
+//        },
+//        
+//        _pull : function(collection, itemIndex) {
+//            
+//        },
+    };
+</script>

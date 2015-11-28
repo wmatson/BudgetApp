@@ -1,0 +1,85 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/editor-icons.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+
+<link rel="import" href="category-form.html">
+
+<dom-module id="budget-template-page">
+
+    <template>
+        <style>
+            :host {
+                @apply(--layout-flex);
+                @apply(--layout-vertical);
+            }
+            
+            paper-dialog {
+                padding: 10px;
+            }
+
+            .item {
+                padding: 10px;
+                border-bottom: 1px solid black;
+            }
+        </style>
+        
+        <iron-ajax id="getAjax" url="/BudgetApp/data" params="{{_generateCollectionNameParams(collectionName)}}" auto last-response="{{categories}}"></iron-ajax>
+        
+        <paper-icon-button icon="icons:add" on-tap="_openCategoryDialog"></paper-icon-button>
+        
+        <paper-dialog id="categoryDialog">
+            <category-form id="categoryForm"></category-form>
+        </paper-dialog>
+        
+        <iron-list id="categoriesList" items="[[categories]]">
+            <template>
+                <div class="item">
+                    <div>Name: <span>[[item.name]]</span></div>
+                    <div>Type: <span>[[item.type]]</span></div>
+                    <div>Description: <span>[[item.description]]</span></div>
+                    <div>Allotted Amount: <span>[[_formatDollarAmount(item.allottedAmount)]]</span></div>
+                    <paper-icon-button icon="editor:mode-edit" on-tap="_updateCategory"></paper-icon-button>
+                    <paper-icon-button icon="icons:delete" on-tap="_deleteCategory"></paper-icon-button>
+                </div>
+            </template>
+        </iron-list>
+    </template>
+
+    <script>
+        Polymer({
+            is: "budget-template-page",
+            properties: {
+                collectionName : {
+                    type: String,
+                    value: "categories"
+                }
+            },
+            
+            _generateCollectionNameParams : function(collectionName) {
+                return { collection: collectionName };
+            },
+            
+            _formatDollarAmount: function (amount) {
+                return amount < 0 ? accounting.formatMoney(-amount) : accounting.formatMoney(amount);
+            },
+            
+            _openCategoryDialog : function() {
+                this.$.newCategoryDialog.open();
+            },
+            
+            _closeCategoryDialog : function() {
+                this.$.newCategoryDialog.close();
+            },
+            
+            _deleteCategory : function(e) {
+                var expenseToDelete = e.model.get('item');
+                this.fire('delete-transaction', expenseToDelete);
+            },
+        });
+    </script>
+
+</dom-module>

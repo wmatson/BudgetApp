@@ -1,0 +1,91 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="data-handler-behavior.html">
+
+<dom-module id="category-form">
+
+    <template>
+        <style>
+            :host {
+                //
+            }
+        </style>
+        
+        <iron-ajax id="postAjax" method="post" url="/BudgetApp/data" on-response="_fireGetAjax"></iron-ajax>
+        
+        <h2>{{_getFormType(create, update)}} Category</h2>
+        <div>
+            <paper-input label="Name" value="{{name}}" always-float-label></paper-input>
+            <paper-input label="Type" value="{{type}}" always-float-label></paper-input>
+            <paper-textarea label="Description" rows="2" value="{{description}}" always-float-label></paper-textarea>
+            <paper-input label="Allotted Amount" type="number" value="{{allottedAmount}}" always-float-label></paper-input>
+        </div>
+        <div>
+            <paper-button hidden="{{update}}" on-tap="_createCategory">Create</paper-button>
+            <paper-button hidden="{{create}}" on-tap="_updateCategory">Update</paper-button>
+        </div>
+        
+    </template>
+
+    <script>
+        Polymer({
+            is: "category-form",
+            
+            behaviors : [DataHandlerBehavior],
+            
+            properties : {
+                update: Boolean,
+                create: Boolean,
+                
+                name: String,
+                type: String,
+                description: String,
+                allottedAmount: Number,
+                
+                collectionName : "categories"
+            },
+            
+            _getFormType : function(create, update) {
+                if (create) {
+                    return "Create";
+                } else if (update) {
+                    return "Update";
+                }
+            },
+            
+            _createCategory : function() {
+                var newCategory = {
+                    name : this.name, 
+                    type : this.type,
+                    description : this.description,
+                    allottedAmount : this.allottedAmount
+                };
+                this._create(this.collectionName, newCategory);
+                this.set('create', false);
+                this._reset();
+            },
+            
+            _updateCategory : function() {
+                var updatedCategory = {
+                    name : this.name, 
+                    type : this.type,
+                    description : this.description
+                };
+                this._update(this.collectionName, updatedCategory);
+                this.set('update', false);
+                this._reset();
+            },
+            
+            _reset : function() {
+                this.set('name', "");
+                this.set('type', "");
+                this.set('description', "");
+            },
+        });
+    </script>
+
+</dom-module>

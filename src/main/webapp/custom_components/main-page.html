@@ -8,6 +8,7 @@
 <link rel="import" href="transactions-page.html">
 <link rel="import" href="bills-page.html">
 <link rel="import" href="loan-payments-page.html">
+<link rel="import" href="budget-template-page.html">
 <link rel="import" href="manual-mongo.html">
 
 <dom-module id="main-page">
@@ -33,6 +34,7 @@
             <paper-tab>Bills</paper-tab>
             <paper-tab>Loans</paper-tab>
             <paper-tab>Income</paper-tab>
+            <paper-tab>Template</paper-tab>
             <paper-tab>Manual Data</paper-tab>
         </paper-tabs>
         <iron-pages selected="{{selectedPage}}">
@@ -54,6 +56,7 @@
                 on-create-transaction="_createTransaction"
                 on-delete-transaction="_deleteTransaction">
             </transactions-page>
+            <budget-template-page></budget-template-page>
             <manual-mongo></manual-mongo>
         </iron-pages>
     </template>
