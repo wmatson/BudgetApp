@@ -15,7 +15,9 @@ import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.ServletContextEvent;
 import javax.servlet.annotation.WebListener;
+import org.apache.log4j.BasicConfigurator;
 
 @WebListener
 public class AppConfig extends GuiceServletContextListener {
@@ -32,6 +34,11 @@ public class AppConfig extends GuiceServletContextListener {
                 filter("/*").through(GuiceContainer.class, params);
             }
         });
+    }
+
+    @Override
+    public void contextInitialized(ServletContextEvent servletContextEvent) {
+        BasicConfigurator.configure();
     }
 
     public static class GuiceConfig implements Module {
